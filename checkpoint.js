@@ -43,11 +43,21 @@ const {
 // allí la recursión
 
 var objContains = function(obj, prop, value){
- if (this.hasOwnProperty(prop) === true && this.prop.value === value){
- return true;
-}
- return false;
-}
+    if(obj == null || prop == null || value == null)
+      return false;
+
+      for(let propiedad in obj) {
+
+       if(propiedad === prop && obj[propiedad] === value) {
+          return true;
+        }
+        if(typeof obj[propiedad] === 'object') {
+          return objContains(obj[propiedad], prop, value);
+        }
+      }
+      return false;
+  }
+
 
 
 // EJERCICIO 2
@@ -66,14 +76,14 @@ var countArray = function(array){
 
 for (var i = 0; i < array.length; i++) {
     if (Array.isArray(array[i]) === true) {
-      countArray(array[i])
+      suma += countArray(array[i]);
     }
     else nuevoArray.push(array[i]);
 }
  for (var j = 0; j < nuevoArray.length; j++) {
    suma += nuevoArray[j];
  }
-
+return suma;
 }
 
 
@@ -163,27 +173,20 @@ LinkedList.prototype.addInPos = function(pos, value){
 //    Lista nueva luego de aplicar el reverse: Head --> 13 --> 10 --> 4 --> 1 --> null
 
 LinkedList.prototype.reverse = function(){
-var nuevaLista = new LinkedList;
-var actualNueva = nuevaLista.head;
-var index = 0;
-var previo = this.head;
-var actual = this.head.next;
+  var node = this.head;
+  var previo = null;
+  while (node) {
+      var actual = node.next;
+      node.next = previo;
+      previo = node;
+      node = actual;
+    }
 
-while (actual !== null) {
-    previo = actual;
-    actual = actual.next;
-    if (actual.next === null){
-    actual = actualNueva;
-    previo = actualNueva.next;
-    actualNueva = actualNueva.next;
+    return previo;
   }
 
- while(previo !==null){
-    previo = actualNueva.next;
-  }
-return nuevaLista;
 
-}}
+
 
 
 // ----------------------
@@ -211,29 +214,37 @@ return nuevaLista;
 //     A --> 4  vs  6 <-- B [6 > 4 entones gana la mano B y pone ambas cartas en su mazo, colocando primero la suya]
 //    - mazoUserA = [2,10,11]
 //    - mazoUserB = [6,9,10,3,6,4]
+
+Queue.prototype.peek = function() {
+  return this.array[0];
+}
 var cardGame = function(mazoUserA, mazoUserB){
 
-  while (mazoUserA.size !==0 && mazoUserB.size !== 0){
-    if(mazoUserA[0] > mazoUserB[0]){
+while (mazoUserA.size() > 0 && mazoUserB.size() > 0){
+    if(mazoUserA.peek() > mazoUserB.peek()){
     mazoUserA.enqueue(mazoUserA.dequeue());
     mazoUserA.enqueue(mazoUserB.dequeue());
-  } else if (mazoUserB[0] > mazoUserA[0]){
-    mazoUserB.enqueue(mazoUserB.dequeuet());
-    mazoUserB.enqueue(mazoUserA.dequeue())
-  }else {
-     mazoUserA.dequeue();
-    mazoUserB.dequeue();
-  }
 
-if (mazoUserA.size !== 0 && mazoUserB === 0){
+  } else if (mazoUserB.peek() > mazoUserA.peek()){
+    mazoUserB.enqueue(mazoUserB.dequeue());
+    mazoUserB.enqueue(mazoUserA.dequeue())
+
+  }else {
+    mazoUserA.dequeue();
+    mazoUserB.dequeue();
+
+  }
+}
+if (mazoUserA.size() > 0)
 return "A wins!";
-}
-else if (mazoUserB.size !== 0 && mazoUserA === 0){
+
+if (mazoUserB.size() > 0)
   return "B wins!";
+
+
+ return "Game tie!";
 }
-else return "Game tie!";
-}
-}
+
 // ---------------
 
 
@@ -254,6 +265,11 @@ else return "Game tie!";
 //       5
 
 function generateBST(array) {
+  var tree = new BinarySearchTree(array[0]);
+
+for (var i = 1; i < array.length; i++) {
+  tree.insert(array[i]);
+}
 
 }
 
@@ -274,24 +290,21 @@ function generateBST(array) {
 //    [Donde 2 sería el número sobre el cuál queremos saber su posición en el array]
 
 var binarySearch = function (array, target) {
-
-if (array.includes(target) === true){
-
-    var mid = Math.floor(array.length/2);
-    if (array[mid] === target){
-    return mid;
-}
-    else if (array[mid] > target){
-      var left = array.slice(0, (mid -1));
-      return binarySearch(left, target);
-  }
-    else if (array[mid] < target){
-    var right = array.slice((mid+1), -1);
-    return binarySearch(array, target);
-}
-}
-
-else return -1;
+    if (array.includes(target) === true) {
+        var mid = Math.floor(array.length/2);
+        if (array[mid] === target){
+            return mid;
+        }
+        else if (array[mid] > target ){
+            var left = array.slice(0, mid);
+            return binarySearch(left, target);
+        }
+        else if (array[mid] < target ) {
+            var right = array.slice(mid);
+            return binarySearch(right, target) + (array.length - right.length);
+        }
+    }
+    else return -1;
 }
 
 
